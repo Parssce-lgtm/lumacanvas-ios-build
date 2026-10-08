@@ -22,7 +22,7 @@ jobs:
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: LumaCanvas-1.7-device-IPA
+          name: LumaCanvas-1.8-device-IPA
           path: source/LumaCanvas/build/LumaCanvas-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
