@@ -1,0 +1,29 @@
+name: Package device IPA
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/package-ipa.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract source
+        run: |
+          mkdir -p source
+          unzip -q LumaCanvas-iOS.zip -d source
+          chmod +x source/LumaCanvas/scripts/*.sh
+      - name: Build unsigned device IPA
+        run: source/LumaCanvas/scripts/build-unsigned-ipa.sh
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: LumaCanvas-1.6-device-IPA
+          path: source/LumaCanvas/build/LumaCanvas-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
+
