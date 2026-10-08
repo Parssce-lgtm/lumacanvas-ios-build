@@ -9,7 +9,7 @@ permissions:
 jobs:
   package:
     runs-on: macos-26
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Extract source
@@ -22,8 +22,20 @@ jobs:
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: LumaCanvas-1.8-device-IPA
+          name: LumaCanvas-device-IPA
           path: source/LumaCanvas/build/LumaCanvas-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
 
+      - name: Build simulator for visual checks
+        run: |
+          xcodebuild build -project source/LumaCanvas/LumaCanvas.xcodeproj -scheme LumaCanvas -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath source/LumaCanvas/build/TestDerivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- -quiet
+      - name: Capture theme and gallery previews
+        run: source/LumaCanvas/scripts/capture-previews.sh
+      - name: Upload visual checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: UI-previews-device-check
+          path: source/LumaCanvas/build/Previews
+          if-no-files-found: error
+          retention-days: 7
